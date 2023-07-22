@@ -1,0 +1,28 @@
+version: 2
+updates:
+
+  # Keep Terraform providers up to date
+  - package-ecosystem: "terraform"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore:"
+
+  # Keep GitHub actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore:"
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    open-pull-requests-limit: 10
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "fix:"
+      prefix-development: "chore:"
