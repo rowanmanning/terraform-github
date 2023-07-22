@@ -1,0 +1,29 @@
+name: Apply Terraform
+on:
+  push:
+    branches:
+      - main
+env:
+  GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN_WRITE }}
+jobs:
+  main:
+    name: Test and apply Terraform config
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Initialise Terraform config
+        run: terraform init
+
+      - name: Check Terraform config formatting
+        run: terraform fmt -check
+
+      - name: Validate Terraform config
+        run: terraform validate -no-color
+
+      - name: Apply Terraform config
+        run: terraform apply -auto-approve

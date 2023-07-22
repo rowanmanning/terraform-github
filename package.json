@@ -13,8 +13,6 @@
     "node": "20.x"
   },
   "scripts": {
-    "verify": "npm run verify:terraform",
-    "verify:terraform": "terraform .",
     "prepare": "husky install"
   },
   "devDependencies": {
