@@ -3,13 +3,24 @@
 
 This is a (experimental) repo used to manage Rowan Manning's GitHub account via Terraform.
 
+* [Local development](#local-development)
+* [Required environment variables](#required-environment-variables)
+* [How to import a repo](#how-to-import-a-repo)
+
+
+## Local development
+
+  * [Install Terraform](https://developer.hashicorp.com/terraform/downloads)
+  * Clone this repo
+  * Install development dependencies with `npm install` (used to verify commit messages)
+
 
 ## Required environment variables
 
   * `GITHUB_TOKEN` to authenticate with GitHub and apply changes
 
 
-## Import repos
+## How to import a repo
 
 Run the following replacing as follows:
 

@@ -1,0 +1,25 @@
+{
+  "name": "@rowanmanning/terraform-github",
+  "version": "0.0.0",
+  "description": "Used to manage Rowan Manning's GitHub account via Terraform",
+  "private": true,
+  "author": "Rowan Manning (https://rowanmanning.com/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rowanmanning/terraform-github.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "verify": "npm run verify:terraform",
+    "verify:terraform": "terraform .",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "husky": "^8.0.1"
+  }
+}
