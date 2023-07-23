@@ -14,6 +14,13 @@ variable "description" {
   type        = string
 }
 
+variable "license" {
+  description = "The project license"
+  type        = string
+  nullable    = true
+  default     = "MIT"
+}
+
 variable "visibility" {
   description = "The visiblity of the repository on GitHub"
   type        = string

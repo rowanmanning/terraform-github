@@ -42,8 +42,21 @@ resource "github_repository_file" "repository_codeowners" {
   repository          = github_repository.repository.name
   branch              = github_branch_default.default.branch
   file                = ".github/CODEOWNERS"
-  content             = templatefile("${path.module}/resources/files/CODEOWNERS.tftpl", { owner : var.owner })
+  content             = templatefile("${path.module}/resources/files/CODEOWNERS.tftpl", { owner = var.owner })
   commit_message      = "chore: enforce codeowners format"
+  commit_author       = local.commit_author
+  commit_email        = local.commit_email
+  overwrite_on_create = true
+}
+
+# Manage the LICENSE file
+resource "github_repository_file" "repository_license" {
+  count               = var.license == "MIT" ? 1 : 0
+  repository          = github_repository.repository.name
+  branch              = github_branch_default.default.branch
+  file                = "LICENSE"
+  content             = templatefile("${path.module}/resources/files/LICENSE-MIT.tftpl", { year = formatdate("YYYY", timestamp()) })
+  commit_message      = "chore: enforce up-to-date MIT LICENSE"
   commit_author       = local.commit_author
   commit_email        = local.commit_email
   overwrite_on_create = true
