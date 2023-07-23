@@ -6,6 +6,9 @@ provider "github" {
 
 locals {
   nodejs_libraries = {
+    allow-methods = {
+      description = "Express/connect middleware to handle 405 errors."
+    }
     get-error-http-status = {
       description = "Get the HTTP status code for an error object."
     }
