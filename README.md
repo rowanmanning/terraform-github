@@ -13,6 +13,7 @@ This is a (experimental) repo used to manage Rowan Manning's GitHub account via 
   * [Install Terraform](https://developer.hashicorp.com/terraform/downloads)
   * Clone this repo
   * Install development dependencies with `npm install` (used to verify commit messages)
+  * Run `terraform init`
 
 
 ## Required environment variables
