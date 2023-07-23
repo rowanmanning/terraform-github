@@ -50,7 +50,7 @@ resource "github_repository_file" "repository_codeowners" {
 }
 
 # Manage the LICENSE file
-resource "github_repository_file" "repository_license" {
+resource "github_repository_file" "repository_license_mit" {
   count               = var.license == "MIT" ? 1 : 0
   repository          = github_repository.repository.name
   branch              = github_branch_default.default.branch
