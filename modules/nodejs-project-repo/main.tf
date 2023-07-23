@@ -1,4 +1,10 @@
 
+# Define local variables
+locals {
+  commit_author = "RowBot"
+  commit_email  = "rowbot@rowanmanning.com"
+}
+
 # Set up the repository with standard settings
 resource "github_repository" "repository" {
   name        = var.name
@@ -38,7 +44,7 @@ resource "github_repository_file" "repository_codeowners" {
   file                = ".github/CODEOWNERS"
   content             = templatefile("${path.module}/resources/files/CODEOWNERS.tftpl", { owner : var.owner })
   commit_message      = "chore: enforce codeowners format"
-  commit_author       = "RowBot"
-  commit_email        = "rowbot@rowanmanning.com"
+  commit_author       = local.commit_author
+  commit_email        = local.commit_email
   overwrite_on_create = true
 }
