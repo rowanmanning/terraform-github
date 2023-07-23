@@ -1,9 +1,4 @@
 
-# Configure the GitHub Provider
-provider "github" {
-  owner = var.owner
-}
-
 # Set up the repository with standard settings
 resource "github_repository" "repository" {
   name        = var.name

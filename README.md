@@ -26,9 +26,8 @@ This is a (experimental) repo used to manage Rowan Manning's GitHub account via 
 Run the following replacing as follows:
 
  * `$TOKEN` should be a valid GitHub auth token
- * `$NAME` should be the terraform module name of the repo you want to import
  * `$REPO_NAME` should be the name of the repository
 
 ```
-GITHUB_TOKEN=$TOKEN terraform import module.$NAME.github_repository.repository $REPO_NAME
+GITHUB_TOKEN=$TOKEN terraform import 'module.nodejs-library-repositories["$REPO_NAME"].github_repository.repository' $REPO_NAME
 ```
