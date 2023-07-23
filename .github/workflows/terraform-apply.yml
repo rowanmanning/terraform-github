@@ -20,7 +20,7 @@ jobs:
         run: terraform init
 
       - name: Check Terraform config formatting
-        run: terraform fmt -check
+        run: terraform fmt -check -diff -no-color
 
       - name: Validate Terraform config
         run: terraform validate -no-color

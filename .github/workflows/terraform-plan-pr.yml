@@ -1,0 +1,144 @@
+name: Test and output Terraform Plan
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+env:
+  GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN_READ }}
+jobs:
+  main:
+    name: Test and output Terraform Plan
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - id: init
+        name: Initialise Terraform config
+        run: terraform init
+
+      - id: format
+        name: Check Terraform config formatting
+        run: terraform fmt -check -diff -no-color
+        continue-on-error: true
+
+      - id: validate
+        name: Validate Terraform config
+        run: terraform validate -no-color
+        continue-on-error: true
+
+      - id: plan
+        if: steps.validate.outputs.exitcode == 0
+        name: Form a plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+      - uses: actions/github-script@v6
+        env:
+          INIT_OUTCOME: "${{ steps.init.outcome }}"
+          FORMAT_OUTCOME: "${{ steps.format.outcome }}"
+          FORMAT_OUTPUT: "${{ steps.format.outputs.stdout }}"
+          VALIDATE_OUTCOME: "${{ steps.validate.outcome }}"
+          VALIDATE_OUTPUT: "${{ steps.validate.outputs.stderr }}"
+          PLAN_OUTCOME: "${{steps.plan.outcome}}"
+          PLAN_OUTPUT: "${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Check if there's an existing comment from this bot
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            const existingComment = comments.find(comment => {
+              return (
+                comment.user.type === 'Bot' &&
+                comment.body.includes('<!-- tf-action-comment -->')
+              );
+            });
+
+            const commentSections = [
+              {
+                title: 'Terraform initialization',
+                outcome: process.env.INIT_OUTCOME
+              },
+              {
+                title: 'Terraform check format and style',
+                outcome: process.env.FORMAT_OUTCOME,
+                hideDetail: false,
+                detailOutputType: 'diff',
+                detail: (
+                  process.env.FORMAT_OUTCOME === 'failure' ?
+                    process.env.FORMAT_OUTPUT :
+                    undefined
+                )
+              },
+              {
+                title: 'Terraform validation',
+                outcome: process.env.VALIDATE_OUTCOME,
+                hideDetail: false,
+                detail: (
+                  process.env.VALIDATE_OUTCOME === 'failure' ?
+                    process.env.VALIDATE_OUTPUT :
+                    undefined
+                )
+              },
+              {
+                title: 'Terraform plan',
+                outcome: process.env.PLAN_OUTCOME,
+                hideDetail: true,
+                detail: (
+                  process.env.PLAN_OUTCOME === 'success' ?
+                    process.env.PLAN_OUTPUT :
+                    undefined
+                )
+              }
+            ];
+
+            const outcomeEmoji = {
+              success: '🟢',
+              failure: '🔴',
+              cancelled: '🟡',
+              skipped: '🔵'
+            };
+
+            // Prepare the comment text
+            let output = commentSections.map(section => {
+              let sectionText = `#### ${outcomeEmoji[section.outcome]} ${section.title} \`${section.outcome}\``;
+              if (section.detail) {
+                const codeBlockType = section.detailOutputType || '';
+                if (section.hideDetail) {
+                  sectionText += `\n<details><summary>Show output</summary>\n\n\`\`\`${codeBlockType}\n${section.detail.trim()}\n\`\`\`\n\n</details>`;
+                } else {
+                  sectionText += `\n\`\`\`${codeBlockType}\n${section.detail.trim()}\n\`\`\``;
+                }
+              }
+              return sectionText;
+            }).join('\n');
+
+            // Add an identifying comment to the comment
+            output += '\n\n<!-- tf-action-comment -->';
+      
+            // If we have a comment, update it, otherwise create a new one
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: output
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            }
