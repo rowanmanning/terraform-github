@@ -28,20 +28,10 @@ resource "github_repository" "repository" {
   vulnerability_alerts = true
 }
 
-# Set the default branch
-resource "github_branch" "default" {
-  repository = github_repository.repository.name
-  branch     = var.default_branch
-}
-resource "github_branch_default" "default" {
-  repository = github_repository.repository.name
-  branch     = github_branch.default.branch
-}
-
 # Manage the CODEOWNERS file
 resource "github_repository_file" "repository_codeowners" {
   repository          = github_repository.repository.name
-  branch              = github_branch_default.default.branch
+  branch              = var.default_branch
   file                = ".github/CODEOWNERS"
   content             = templatefile("${path.module}/resources/files/CODEOWNERS.tftpl", { owner = var.owner })
   commit_message      = "chore: enforce codeowners format"
@@ -54,7 +44,7 @@ resource "github_repository_file" "repository_codeowners" {
 resource "github_repository_file" "repository_license_mit" {
   count               = var.license == "MIT" ? 1 : 0
   repository          = github_repository.repository.name
-  branch              = github_branch_default.default.branch
+  branch              = var.default_branch
   file                = "LICENSE"
   content             = templatefile("${path.module}/resources/files/LICENSE-MIT.tftpl", { year = var.license_year })
   commit_message      = "chore: enforce up-to-date MIT LICENSE"
