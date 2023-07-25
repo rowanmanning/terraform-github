@@ -11,6 +11,7 @@ resource "github_repository" "repository" {
   description = var.description
   visibility  = var.visibility
   auto_init   = true
+  archive_on_destroy = true
 
   has_issues      = true
   has_discussions = false
