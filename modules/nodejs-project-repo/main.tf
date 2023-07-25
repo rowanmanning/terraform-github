@@ -55,7 +55,7 @@ resource "github_repository_file" "repository_license_mit" {
   repository          = github_repository.repository.name
   branch              = github_branch_default.default.branch
   file                = "LICENSE"
-  content             = templatefile("${path.module}/resources/files/LICENSE-MIT.tftpl", { year = formatdate("YYYY", timestamp()) })
+  content             = templatefile("${path.module}/resources/files/LICENSE-MIT.tftpl", { year = var.license_year })
   commit_message      = "chore: enforce up-to-date MIT LICENSE"
   commit_author       = local.commit_author
   commit_email        = local.commit_email

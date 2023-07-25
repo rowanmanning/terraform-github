@@ -32,3 +32,9 @@ variable "default_branch" {
   type        = string
   default     = "main"
 }
+
+variable "license_year" {
+  description = "The year to add to license files"
+  type        = number
+  default     = 2023
+}
